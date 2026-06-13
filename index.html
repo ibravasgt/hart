@@ -17,13 +17,11 @@
             min-height: 100vh;
             overflow: hidden;
         }
-
         #flipbook {
             width: 480px;
             height: 720px;
             position: relative;
         }
-
         #flipbook .page {
             width: 480px;
             height: 720px;
@@ -31,8 +29,6 @@
             background-position: center;
             background-repeat: no-repeat;
         }
-
-        /* Flechas navegación */
         .nav-btn {
             position: fixed;
             top: 50%;
@@ -55,8 +51,6 @@
         .nav-btn:hover { background: rgba(255,255,255,0.35); }
         #btn-prev { left: 16px; }
         #btn-next { right: 16px; }
-
-        /* Botón fullscreen */
         #btn-fullscreen {
             position: fixed;
             top: 16px;
@@ -78,8 +72,6 @@
             transition: background 0.2s;
         }
         #btn-fullscreen:hover { background: rgba(255,255,255,0.35); }
-
-        /* Hint */
         #corner-hint {
             position: fixed;
             bottom: 24px;
@@ -114,16 +106,9 @@
             75%  { opacity: 1; }
             100% { opacity: 0; }
         }
-
         @media (max-width: 520px) {
-            #flipbook {
-                width: 100vw;
-                height: calc(100vw * 3 / 2);
-            }
-            #flipbook .page {
-                width: 100vw;
-                height: calc(100vw * 3 / 2);
-            }
+            #flipbook { width: 100vw; height: calc(100vw * 3 / 2); }
+            #flipbook .page { width: 100vw; height: calc(100vw * 3 / 2); }
             .nav-btn { width: 36px; height: 36px; font-size: 18px; }
             #btn-prev { left: 6px; }
             #btn-next { right: 6px; }
@@ -131,6 +116,8 @@
     </style>
 </head>
 <body>
+
+<audio id="sonido-hoja" src="pasar.wav" preload="auto"></audio>
 
 <button class="nav-btn" id="btn-prev">‹</button>
 <button class="nav-btn" id="btn-next">›</button>
@@ -180,6 +167,9 @@
         when: {
             turned: function(e, page) {
                 if (page > 1) $("#corner-hint").fadeOut(400);
+                var sonido = document.getElementById("sonido-hoja");
+                sonido.currentTime = 0;
+                sonido.play();
             }
         }
     });
@@ -192,7 +182,6 @@
         if (e.keyCode === 39) $("#flipbook").turn("next");
     });
 
-    // Click sin drag para navegar
     var mouseStartX = 0;
     var mouseMoved = false;
 
@@ -227,7 +216,6 @@
 
     setTimeout(function() { $("#corner-hint").fadeOut(600); }, 4000);
 
-    // Fullscreen
     $("#btn-fullscreen").on("click", function() {
         var el = document.documentElement;
         if (!document.fullscreenElement) {
