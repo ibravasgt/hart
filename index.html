@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revista</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="turn.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #222;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        #flipbook {
+            width: 480px;
+            height: 720px;
+            position: relative;
+        }
+
+        #flipbook .page {
+            width: 480px;
+            height: 720px;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        /* Flechas navegación */
+        .nav-btn {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.15);
+            border: 2px solid rgba(255,255,255,0.4);
+            color: white;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            font-size: 22px;
+            cursor: pointer;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            backdrop-filter: blur(4px);
+        }
+        .nav-btn:hover { background: rgba(255,255,255,0.35); }
+        #btn-prev { left: 16px; }
+        #btn-next { right: 16px; }
+
+        /* Botón fullscreen */
+        #btn-fullscreen {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            transform: none;
+            background: rgba(255,255,255,0.15);
+            border: 2px solid rgba(255,255,255,0.4);
+            color: white;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            z-index: 999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+            transition: background 0.2s;
+        }
+        #btn-fullscreen:hover { background: rgba(255,255,255,0.35); }
+
+        /* Hint */
+        #corner-hint {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0,0,0,0.55);
+            color: white;
+            font-size: 13px;
+            padding: 8px 16px;
+            border-radius: 24px;
+            backdrop-filter: blur(6px);
+            animation: fadeInOut 4s ease forwards;
+            z-index: 999;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+        .arrow-icon {
+            font-size: 18px;
+            animation: bounceLeft 0.8s infinite alternate;
+            display: inline-block;
+        }
+        @keyframes bounceLeft {
+            from { transform: translateX(0px); }
+            to   { transform: translateX(-5px); }
+        }
+        @keyframes fadeInOut {
+            0%   { opacity: 0; }
+            15%  { opacity: 1; }
+            75%  { opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        @media (max-width: 520px) {
+            #flipbook {
+                width: 100vw;
+                height: calc(100vw * 3 / 2);
+            }
+            #flipbook .page {
+                width: 100vw;
+                height: calc(100vw * 3 / 2);
+            }
+            .nav-btn { width: 36px; height: 36px; font-size: 18px; }
+            #btn-prev { left: 6px; }
+            #btn-next { right: 6px; }
+        }
+    </style>
+</head>
+<body>
+
+<button class="nav-btn" id="btn-prev">‹</button>
+<button class="nav-btn" id="btn-next">›</button>
+<button id="btn-fullscreen" title="Fullscreen">⛶</button>
+
+<div id="corner-hint">
+    <span class="arrow-icon">👆</span> Tap the corner to turn the page
+</div>
+
+<div id="flipbook">
+    <div class="page" style="background-image: url('imagen 1.jpg');"></div>
+    <div class="page" style="background-image: url('imagen 2.jpg');"></div>
+    <div class="page" style="background-image: url('imagen 3.jpg');"></div>
+    <div class="page" style="background-image: url('imagen 4.jpg');"></div>
+    <div class="page" style="background-image: url('imagen 5.jpg');"></div>
+    <div class="page" style="background-image: url('imagen 6.jpg');"></div>
+    <div class="page" style="background-image: url('imagen 7.jpg');"></div>
+    <div class="page" style="background-image: url('imagen 8.jpg');"></div>
+    <div class="page" style="background-image: url('imagen 9.jpg');"></div>
+    <div class="page" style="background-image: url('imagen 10.jpg');"></div>
+    <div class="page" style="background-image: url('imagen 11.jpg');"></div>
+    <div class="page" style="background-image: url('imagen 12.jpg');"></div>
+    <div class="page" style="background-image: url('imagen 13.jpg');"></div>
+    <div class="page" style="background-image: url('imagen 14.jpg');"></div>
+    <div class="page" style="background-image: url('imagen 15.jpg');"></div>
+    <div class="page" style="background-image: url('imagen 16.jpg');"></div>
+    <div class="page" style="background-image: url('imagen 17.jpg');"></div>
+</div>
+
+<script>
+    function getSize() {
+        var maxW = 480;
+        var w = Math.min($(window).width(), maxW);
+        var h = w * 3 / 2;
+        return { w: w, h: h };
+    }
+
+    var size = getSize();
+
+    $("#flipbook").turn({
+        width: size.w,
+        height: size.h,
+        autoCenter: true,
+        display: 'single',
+        acceleration: true,
+        gradients: true,
+        when: {
+            turned: function(e, page) {
+                if (page > 1) $("#corner-hint").fadeOut(400);
+            }
+        }
+    });
+
+    $("#btn-prev").on("click", function() { $("#flipbook").turn("previous"); });
+    $("#btn-next").on("click", function() { $("#flipbook").turn("next"); });
+
+    $(document).keydown(function(e) {
+        if (e.keyCode === 37) $("#flipbook").turn("previous");
+        if (e.keyCode === 39) $("#flipbook").turn("next");
+    });
+
+    // Click sin drag para navegar
+    var mouseStartX = 0;
+    var mouseMoved = false;
+
+    $("#flipbook").on("mousedown touchstart", function(e) {
+        mouseStartX = e.type === "touchstart" ? e.originalEvent.touches[0].clientX : e.clientX;
+        mouseMoved = false;
+    });
+
+    $("#flipbook").on("mousemove touchmove", function(e) {
+        var currentX = e.type === "touchmove" ? e.originalEvent.touches[0].clientX : e.clientX;
+        if (Math.abs(currentX - mouseStartX) > 10) mouseMoved = true;
+    });
+
+    $("#flipbook").on("mouseup touchend", function(e) {
+        if (!mouseMoved) {
+            var clickX = e.type === "touchend"
+                ? e.originalEvent.changedTouches[0].clientX
+                : e.clientX;
+            var mid = $(window).width() / 2;
+            if (clickX > mid) {
+                $("#flipbook").turn("next");
+            } else {
+                $("#flipbook").turn("previous");
+            }
+        }
+    });
+
+    $(window).on('resize', function() {
+        var s = getSize();
+        $("#flipbook").turn("size", s.w, s.h);
+    });
+
+    setTimeout(function() { $("#corner-hint").fadeOut(600); }, 4000);
+
+    // Fullscreen
+    $("#btn-fullscreen").on("click", function() {
+        var el = document.documentElement;
+        if (!document.fullscreenElement) {
+            el.requestFullscreen().catch(function(err) {
+                console.log("Fullscreen error: " + err.message);
+            });
+            $("#btn-fullscreen").text("✕");
+        } else {
+            document.exitFullscreen();
+            $("#btn-fullscreen").text("⛶");
+        }
+    });
+
+    document.addEventListener("fullscreenchange", function() {
+        if (!document.fullscreenElement) {
+            $("#btn-fullscreen").text("⛶");
+        }
+        var s = getSize();
+        $("#flipbook").turn("size", s.w, s.h);
+    });
+</script>
+</body>
+</html>
