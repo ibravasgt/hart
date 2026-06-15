@@ -172,8 +172,18 @@
 <script>
     var audios = [
         'audio1.mp3',
-        null, null, null, null, null, null, null, null,
-        null, null, null, null, null, null, null, null
+        'audio2.mp3',
+        'audio3.mp3',
+        'audio4.mp3',
+        'audio5.mp3',
+        'audio6.mp3',
+        'audio7.mp3',
+        'audio8.mp3',
+        'audio9.mp3',
+        'audio10.mp3',
+        'audio11.mp3',
+        'audio12.mp3',
+        null, null, null, null, null
     ];
 
     var narrador = document.getElementById('narrador');
@@ -209,7 +219,7 @@
         display: 'single',
         acceleration: true,
         gradients: true,
-        duration: 2000,
+        duration: 1800,
         when: {
             turned: function(e, page) {
                 if (page > 1) $("#corner-hint").fadeOut(400);
