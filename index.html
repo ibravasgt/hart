@@ -64,7 +64,7 @@
             border-radius: 50%;
             font-size: 18px;
             cursor: pointer;
-            z-index: 999;
+            z-index: 9999;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -72,6 +72,26 @@
             transition: background 0.2s;
         }
         #btn-fullscreen:hover { background: rgba(255,255,255,0.35); }
+        #btn-play {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            background: rgba(0,0,0,0.55);
+            border: 2px solid rgba(255,255,255,0.4);
+            color: white;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+            transition: background 0.2s;
+        }
+        #btn-play:hover { background: rgba(255,255,255,0.35); }
         #corner-hint {
             position: fixed;
             bottom: 24px;
@@ -118,10 +138,12 @@
 <body>
 
 <audio id="sonido-hoja" src="pasar.wav" preload="auto"></audio>
+<audio id="narrador" preload="auto"></audio>
 
 <button class="nav-btn" id="btn-prev">‹</button>
 <button class="nav-btn" id="btn-next">›</button>
 <button id="btn-fullscreen" title="Fullscreen">⛶</button>
+<button id="btn-play" title="Play narration">▶</button>
 
 <div id="corner-hint">
     <span class="arrow-icon">👆</span> Tap the corner to turn the page
@@ -148,6 +170,29 @@
 </div>
 
 <script>
+    var audios = [
+        'audio1.mp3',
+        null, null, null, null, null, null, null, null,
+        null, null, null, null, null, null, null, null
+    ];
+
+    var narrador = document.getElementById('narrador');
+    var isPlaying = false;
+
+    function loadAudio(page) {
+        narrador.pause();
+        narrador.currentTime = 0;
+        isPlaying = false;
+        $("#btn-play").text("▶");
+        if (audios[page - 1]) {
+            narrador.src = audios[page - 1];
+            $("#btn-play").css("opacity", "1");
+        } else {
+            narrador.src = "";
+            $("#btn-play").css("opacity", "0.3");
+        }
+    }
+
     function getSize() {
         var maxW = 480;
         var w = Math.min($(window).width(), maxW);
@@ -170,8 +215,29 @@
                 var sonido = document.getElementById("sonido-hoja");
                 sonido.currentTime = 0;
                 sonido.play();
+                loadAudio(page);
             }
         }
+    });
+
+    loadAudio(1);
+
+    $("#btn-play").on("click", function() {
+        if (!narrador.src || narrador.src === window.location.href) return;
+        if (isPlaying) {
+            narrador.pause();
+            isPlaying = false;
+            $("#btn-play").text("▶");
+        } else {
+            narrador.play();
+            isPlaying = true;
+            $("#btn-play").text("⏸");
+        }
+    });
+
+    narrador.addEventListener('ended', function() {
+        isPlaying = false;
+        $("#btn-play").text("▶");
     });
 
     $("#btn-prev").on("click", function() { $("#flipbook").turn("previous"); });
