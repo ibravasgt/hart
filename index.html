@@ -178,7 +178,6 @@
 
     var narrador = document.getElementById('narrador');
     var isPlaying = false;
-    var firstInteraction = true;
 
     function loadAudio(page) {
         narrador.pause();
@@ -191,14 +190,6 @@
         } else {
             narrador.src = "";
             $("#btn-play").css("opacity", "0.3");
-        }
-    }
-
-    function playAudio() {
-        if (narrador.src && narrador.src !== window.location.href) {
-            narrador.play();
-            isPlaying = true;
-            $("#btn-play").text("⏸");
         }
     }
 
@@ -225,27 +216,13 @@
                 sonido.currentTime = 0;
                 sonido.play();
                 loadAudio(page);
-                // Autoplay al cambiar página
-                setTimeout(function() {
-                    playAudio();
-                }, 500);
             }
         }
     });
 
     loadAudio(1);
 
-    // Autoplay en primer click del usuario
-    $(document).one("click touchstart", function() {
-        if (firstInteraction) {
-            firstInteraction = false;
-            playAudio();
-        }
-    });
-
-    // Botón play/pause manual
-    $("#btn-play").on("click", function(e) {
-        e.stopPropagation();
+    $("#btn-play").on("click", function() {
         if (!narrador.src || narrador.src === window.location.href) return;
         if (isPlaying) {
             narrador.pause();
