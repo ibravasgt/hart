@@ -189,7 +189,7 @@
     var narrador = document.getElementById('narrador');
     var isPlaying = false;
 
-    function loadAudio(page) {
+    function loadAudio(page, autoplay) {
         narrador.pause();
         narrador.currentTime = 0;
         isPlaying = false;
@@ -197,6 +197,11 @@
         if (audios[page - 1]) {
             narrador.src = audios[page - 1];
             $("#btn-play").css("opacity", "1");
+            if (autoplay) {
+                narrador.play();
+                isPlaying = true;
+                $("#btn-play").text("⏸");
+            }
         } else {
             narrador.src = "";
             $("#btn-play").css("opacity", "0.3");
@@ -226,12 +231,12 @@
                 var sonido = document.getElementById("sonido-hoja");
                 sonido.currentTime = 0;
                 sonido.play();
-                loadAudio(page);
+                loadAudio(page, true);
             }
         }
     });
 
-    loadAudio(1);
+    loadAudio(1, false);
 
     $("#btn-play").on("click", function() {
         if (!narrador.src || narrador.src === window.location.href) return;
